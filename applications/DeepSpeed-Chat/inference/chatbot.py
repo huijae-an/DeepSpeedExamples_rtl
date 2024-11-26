@@ -11,6 +11,7 @@ import os
 import json
 from transformers import pipeline, set_seed
 from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM
+from transformers import LlamaTokenizer
 
 
 def parse_args():
@@ -35,8 +36,12 @@ def get_generator(path):
         if os.path.exists(model_json):
             model_json_file = json.load(open(model_json))
             model_name = model_json_file["_name_or_path"]
-            tokenizer = AutoTokenizer.from_pretrained(model_name,
-                                                      fast_tokenizer=True)
+            
+            # 11/22
+            # tokenizer = AutoTokenizer.from_pretrained(model_name, fast_tokenizer=True)
+            tokenizer = LlamaTokenizer.from_pretrained(model_name)
+
+
     else:
         tokenizer = AutoTokenizer.from_pretrained(path, fast_tokenizer=True)
 
@@ -47,6 +52,13 @@ def get_generator(path):
     model = model_class.from_pretrained(path,
                                         from_tf=bool(".ckpt" in path),
                                         config=model_config).half()
+
+    # 10/29
+    tokenizer.push_to_hub("rtl-llm/codellama-7b-bf16") 
+    model.push_to_hub("rtl-llm/codellama-7b-bf16")
+
+
+
 
     model.config.end_token_id = tokenizer.eos_token_id
     model.config.pad_token_id = model.config.eos_token_id

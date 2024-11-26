@@ -29,6 +29,7 @@ def get_raw_dataset(dataset_name, output_path, seed, local_rank):
     elif "Dahoas/synthetic-instruct-gptj-pairwise" in dataset_name:
         return raw_datasets.DahoasSyntheticinstructgptjpairwiseDataset(
             output_path, seed, local_rank, dataset_name)
+
     elif "yitingxie/rlhf-reward-datasets" in dataset_name:
         return raw_datasets.YitingxieRlhfrewarddatasetsDataset(
             output_path, seed, local_rank, dataset_name)

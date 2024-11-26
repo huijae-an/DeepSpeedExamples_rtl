@@ -5,6 +5,7 @@
 # DeepSpeed Team
 import argparse
 import math
+import wandb
 
 import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
@@ -222,6 +223,24 @@ def main():
                                     enable_tensorboard=args.enable_tensorboard,
                                     tb_path=args.tensorboard_path,
                                     tb_name="step1_model")
+
+# Added: 11/13
+    wandb.login(key="ecdcd8bc51cf31e3f6e4cf408659ac4a1ad34505")
+    ds_config['wandb'] = {
+        "enabled": True,
+        "group": "huijae-an-university-of-california-berkeley",
+        "team": "huijae-an-university-of-california-berkeley",
+        "project": "ds_codellama_7b"
+    }
+
+
+
+
+
+
+
+
+
     ds_config[
         'train_micro_batch_size_per_gpu'] = args.per_device_train_batch_size
     ds_config[
@@ -272,6 +291,7 @@ def main():
         args.max_seq_len,
         end_of_conversation_token=tokenizer.eos_token,
         sft_only_data_path=args.sft_only_data_path)
+    print("Finished creating prompt dataset")
     # DataLoaders creation:
     if args.local_rank == -1:
         train_sampler = RandomSampler(train_dataset)
@@ -291,10 +311,13 @@ def main():
     def evaluation(model, eval_dataloader):
         model.eval()
         losses = 0
+        # print("evaluation device", device, "rank", torch.distributed.get_rank())
         for step, batch in enumerate(eval_dataloader):
+            # print("starting step", step, torch.distributed.get_rank())
             batch = to_device(batch, device)
             with torch.no_grad():
                 outputs = model(**batch)
+            # print("finished step", step, torch.distributed.get_rank())
 
             loss = outputs.loss
             losses += loss.float()

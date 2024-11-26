@@ -47,6 +47,45 @@ class PromptRawDataset(object):
         return
 
 
+# Adding new Class for customized dataset (10/21)
+class VerilogCTranslationDataset(PromptRawDataset):
+    
+    def __init__(self, output_path, seed, local_rank, dataset_name):
+        super().__init__(output_path, seed, local_rank, dataset_name)
+        self.dataset_name = "huijae/verilog_c_translation"  
+        self.dataset_name_clean = "huijae_verilog_c_translation"
+
+    def get_train_data(self):
+        return self.raw_datasets["train"]
+
+    def get_eval_data(self):
+        return self.raw_datasets["test"]
+
+    def get_prompt(self, sample):
+        if sample['task'].lower() == 'v2c':
+            return f" Human: {sample['text1']} Assistant:"
+        elif sample['task'].lower() == 'c2v':
+            return f" Human: {sample['text2']} Assistant:"
+        elif sample['task'].lower() == 'autocompletion':
+            return f" Human: {sample['text1']} Assistant:"
+        else:
+            return " Human: " + sample['text1'] + " Assistant:"
+
+    def get_chosen(self, sample):
+        return f" {sample['text2']}"
+
+    def get_rejected(self, sample):
+        return None
+
+    def get_prompt_and_chosen(self, sample):
+        return self.get_prompt(sample) + self.get_chosen(sample)
+
+    def get_prompt_and_rejected(self, sample):
+        if self.get_rejected(sample):
+            return self.get_prompt(sample) + self.get_rejected(sample)
+        return None
+
+
 # English dataset
 class DahoasRmstaticDataset(PromptRawDataset):
 
