@@ -1,6 +1,8 @@
-OUTPUT=./output_codellama_7b_lora16
+OUTPUT=./output_cl_autocomplete_epoch1
+GARBAGE=/scratch/huijaean/garbage/*
 ZERO_STAGE=3
 mkdir -p $OUTPUT
+rm -rf $GARBAGE
 
 deepspeed main.py \
    --data_path local/jsonfile \
@@ -20,15 +22,18 @@ deepspeed main.py \
    --dtype bf16 \
    --zero_stage $ZERO_STAGE \
    --deepspeed \
-   --lora_dim 16 \
+   --lora_dim 32 \
    --lora_module_name "layers." \
    --output_dir $OUTPUT \
    | tee $OUTPUT/training.log
 
 
-OUTPUT=./output_codellama_7b_lr5e-7
+
+OUTPUT=./output_cl_autocomplete_epoch2
+GARBAGE=/scratch/huijaean/garbage/*
 ZERO_STAGE=3
 mkdir -p $OUTPUT
+rm -rf $GARBAGE
 
 deepspeed main.py \
    --data_path local/jsonfile \
@@ -38,8 +43,8 @@ deepspeed main.py \
    --per_device_train_batch_size 8 \
    --per_device_eval_batch_size 8 \
    --max_seq_len 512 \
-   --learning_rate 5e-7 \
-   --num_train_epochs 1  \
+   --learning_rate 5e-5 \
+   --num_train_epochs 2  \
    --gradient_accumulation_steps 32 \
    --lr_scheduler_type cosine \
    --num_warmup_steps 0 \
@@ -52,5 +57,3 @@ deepspeed main.py \
    --lora_module_name "layers." \
    --output_dir $OUTPUT \
    | tee $OUTPUT/training.log
-
-

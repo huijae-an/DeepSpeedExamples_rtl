@@ -1,0 +1,73 @@
+import argparse
+import os
+import sys
+import json
+import torch
+from transformers import AutoConfig, AutoModelForCausalLM
+from transformers import LlamaTokenizer
+
+
+def validate_model_path(model_path):
+    # List of required files in the model directory
+    required_files = ["config.json", "pytorch_model.bin", "tokenizer.model"]
+
+    # Check if the directory exists
+    if not os.path.isdir(model_path):
+        print(f"Error: The path '{model_path}' is not a valid directory.")
+        sys.exit(1)
+
+    # Check for the presence of required files
+    missing_files = [file for file in required_files if not os.path.isfile(os.path.join(model_path, file))]
+    if missing_files:
+        print(f"Error: The directory '{model_path}' is missing the following required files: {', '.join(missing_files)}")
+        sys.exit(1)
+
+    print(f"The path '{model_path}' is valid and contains all required files.")
+
+def load_tokenizer_and_model(path, repo):
+    model_json = os.path.join(path, "config.json")
+    with open(model_json, "r") as f:
+        model_json_file = json.load(f)
+    model_name = model_json_file["_name_or_path"]
+
+
+    # Edit this line if using non-Llama models
+    tokenizer = LlamaTokenizer.from_pretrained(model_name)
+
+
+    tokenizer.pad_token = tokenizer.eos_token
+    model_config = AutoConfig.from_pretrained(path)
+    model = AutoModelForCausalLM.from_pretrained(path, config=model_config, torch_dtype=torch.bfloat16)
+
+    tokenizer.push_to_hub(repo)
+    model.push_to_hub(repo)
+
+def main():
+    # Create the argument parser
+    parser = argparse.ArgumentParser(description="Process model location path.")
+    
+    parser.add_argument(
+        "--path",
+        type=str,
+        required=True,
+        help="Path to the model location"
+    )
+
+    parser.add_argument(
+        "--repo",
+        type=str,
+        required=True,
+        help="Hugging Face repository to upload the model and tokenizer to (e.g., username/repo-name)"
+    )    
+    
+    # Parse the arguments
+    args = parser.parse_args()
+    
+    # Validate the path
+    validate_model_path(args.path)
+
+    # Load Tokenizer and Model, and upload to Huggingface
+    load_tokenizer_and_model(args.path, args.repo)
+
+if __name__ == "__main__":
+    main()
