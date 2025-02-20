@@ -83,8 +83,8 @@ class LocalJsonFileDataset(PromptRawDataset):
 
     # The chosen response should be in the format of: " " + actual_response_sentence
     def get_chosen(self, sample):
-        if sample['chosen'] is not None:
-            return " " + sample['chosen']
+        if sample['response'] is not None:
+            return " " + sample['response']
         return None
 
     # The rejected response should be in the format of: " " + actual_response_sentence
@@ -95,8 +95,8 @@ class LocalJsonFileDataset(PromptRawDataset):
         return None
 
     def get_prompt_and_chosen(self, sample):
-        if sample['prompt'] is not None and sample['chosen'] is not None:
-            return " " + sample['prompt'] + " " + sample['chosen']
+        if sample['prompt'] is not None and sample['response'] is not None:
+            return " " + sample['prompt'] + " " + sample['response']
         return None
 
     def get_prompt_and_rejected(self, sample):

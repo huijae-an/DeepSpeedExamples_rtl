@@ -1,12 +1,12 @@
 #!/bin/bash
 
-OUTPUT="./qwen2\.5_old_chisel"
-GARBAGE="/scratch/huijaean/garbage/*"
-PREVIOUS_MODEL_CACHE="$HOME/.cache/huggingface/hub/*"
+OUTPUT=./qwen2.5_old_chisel
+GARBAGE=/scratch/huijaean/garbage/*
+PREVIOUS_MODEL_CACHE=$HOME/.cache/huggingface/hub/*
 ZERO_STAGE=3
 mkdir -p $OUTPUT
 rm -rf $GARBAGE
-rm -rf $PREVIOUS_MODEL_CACHE
+# rm -rf $PREVIOUS_MODEL_CACHE
 
 
 deepspeed main.py \

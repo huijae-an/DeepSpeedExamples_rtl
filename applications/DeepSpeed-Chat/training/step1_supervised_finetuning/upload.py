@@ -3,13 +3,13 @@ import os
 import sys
 import json
 import torch
-from transformers import AutoConfig, AutoModelForCausalLM
-from transformers import LlamaTokenizer
+from transformers import AutoTokenizer, AutoConfig, AutoModelForCausalLM
+from dschat.utils.utils import get_tokenizer
 
 
 def validate_model_path(model_path):
     # List of required files in the model directory
-    required_files = ["config.json", "pytorch_model.bin", "tokenizer.model"]
+    required_files = ["config.json", "pytorch_model.bin"]
 
     # Check if the directory exists
     if not os.path.isdir(model_path):
@@ -31,16 +31,21 @@ def load_tokenizer_and_model(path, repo):
     model_name = model_json_file["_name_or_path"]
 
 
-    # Edit this line if using non-Llama models
-    tokenizer = LlamaTokenizer.from_pretrained(model_name)
 
 
-    tokenizer.pad_token = tokenizer.eos_token
-    model_config = AutoConfig.from_pretrained(path)
-    model = AutoModelForCausalLM.from_pretrained(path, config=model_config, torch_dtype=torch.bfloat16)
+
+    tokenizer = get_tokenizer(model_name)
+    print("tokenizer loaded no problem")
+    # model = AutoModelForCausalLM.from_pretrained(path, config=AutoConfig.from_pretrained(path), torch_dtype=torch.bfloat16)
+    model = AutoModelForCausalLM.from_pretrained(path, config=AutoConfig.from_pretrained(path))
+    print("model loaded no problem")
 
     tokenizer.push_to_hub(repo)
     model.push_to_hub(repo)
+
+
+
+
 
 def main():
     # Create the argument parser
