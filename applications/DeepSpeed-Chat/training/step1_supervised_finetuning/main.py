@@ -230,7 +230,7 @@ def main():
         "enabled": True,
         "group": "huijae-an-university-of-california-berkeley",
         "team": "huijae-an-university-of-california-berkeley",
-        "project": "ds_codellama_7b"
+        "project": "rtl-llm_curr"
     }
 
 
@@ -258,6 +258,9 @@ def main():
     tokenizer = load_hf_tokenizer(args.model_name_or_path,
                                   fast_tokenizer=True,
                                   add_special_tokens=additional_special_tokens)
+
+    print("Completed loading tailored tokenizer for our model!!!")
+
 
     model = create_hf_model(AutoModelForCausalLM,
                             args.model_name_or_path,
@@ -360,6 +363,11 @@ def main():
 
     if args.gradient_checkpointing:
         model.gradient_checkpointing_enable()
+
+        
+    print("Everything ready and good to go. Now we're training.")    
+
+
 
     # Train!
     print_rank_0("***** Running training *****", args.global_rank)

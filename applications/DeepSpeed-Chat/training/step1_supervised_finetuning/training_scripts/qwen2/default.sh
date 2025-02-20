@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OUTPUT="./output_cl_autocomplete_epoch1"
+OUTPUT="./qwen2\.5_old_chisel"
 GARBAGE="/scratch/huijaean/garbage/*"
 PREVIOUS_MODEL_CACHE="$HOME/.cache/huggingface/hub/*"
 ZERO_STAGE=3
@@ -13,7 +13,7 @@ deepspeed main.py \
    --data_path local/jsonfile \
    --data_split "10,0,0" \
    --data_output_path /scratch/huijaean/garbage \
-   --model_name_or_path meta-llama/CodeLlama-7b-Instruct-hf \
+   --model_name_or_path Qwen/Qwen2.5-Coder-7B-Instruct \
    --per_device_train_batch_size 8 \
    --per_device_eval_batch_size 8 \
    --max_seq_len 512 \
