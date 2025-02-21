@@ -4,7 +4,8 @@ import sys
 import json
 import torch
 from transformers import AutoTokenizer, AutoConfig, AutoModelForCausalLM
-from dschat.utils.utils import get_tokenizer
+from dschat.utils.utils import load_hf_tokenizer
+from dschat.utils.model.model_utils import create_hf_model
 
 
 def validate_model_path(model_path):
@@ -25,25 +26,19 @@ def validate_model_path(model_path):
     print(f"The path '{model_path}' is valid and contains all required files.")
 
 def load_tokenizer_and_model(path, repo):
-    model_json = os.path.join(path, "config.json")
-    with open(model_json, "r") as f:
-        model_json_file = json.load(f)
-    model_name = model_json_file["_name_or_path"]
+   
 
 
-
-
-
-    tokenizer = get_tokenizer(model_name)
+    tokenizer = load_hf_tokenizer(path)
     print("tokenizer loaded no problem")
     # model = AutoModelForCausalLM.from_pretrained(path, config=AutoConfig.from_pretrained(path), torch_dtype=torch.bfloat16)
-    model = AutoModelForCausalLM.from_pretrained(path, config=AutoConfig.from_pretrained(path))
+    # model = AutoModelForCausalLM.from_pretrained(path, config=AutoConfig.from_pretrained(path))
+    model = create_hf_model(AutoModelForCausalLM, path, tokenizer)
     print("model loaded no problem")
+
 
     tokenizer.push_to_hub(repo)
     model.push_to_hub(repo)
-
-
 
 
 
