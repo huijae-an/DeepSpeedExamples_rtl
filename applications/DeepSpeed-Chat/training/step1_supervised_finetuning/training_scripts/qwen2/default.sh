@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OUTPUT=./qwen2.5_randomized
+OUTPUT=./qwen2.5_ordered
 GARBAGE=/scratch/huijaean/garbage/*
 PREVIOUS_MODEL_CACHE=$HOME/.cache/huggingface/hub/*
 ZERO_STAGE=3
@@ -9,7 +9,7 @@ rm -rf $GARBAGE
 rm -rf $PREVIOUS_MODEL_CACHE
 
 
-deepspeed --master_port 70000 main.py \
+deepspeed --master_port 50000 main.py \
    --data_path local/jsonfile \
    --data_split "10,0,0" \
    --data_output_path /scratch/huijaean/garbage \
@@ -18,7 +18,7 @@ deepspeed --master_port 70000 main.py \
    --per_device_eval_batch_size 8 \
    --max_seq_len 512 \
    --learning_rate 25e-5 \
-   --num_train_epochs 1  \
+   --num_train_epochs 2  \
    --gradient_accumulation_steps 32 \
    --lr_scheduler_type cosine \
    --num_warmup_steps 0 \
