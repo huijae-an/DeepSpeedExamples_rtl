@@ -174,10 +174,21 @@ def create_dataset_split(current_dataset, raw_dataset, train_phase, tokenizer,
     if train_phase == 1:
         for i, tmp_data in enumerate(current_dataset):
             # tokenize the text
-            chosen_sentence = raw_dataset.get_prompt_and_chosen(
-                tmp_data)  # the accept response
+            # chosen_sentence = raw_dataset.get_prompt_and_chosen(
+            #     tmp_data)  # the accept response
+            messages = [
+                {"role": "system", "content": "You are a Verilog RTL designer that only writes code using correct Verilog syntax."},
+                {"role": "user", "content": tmp_data["prompt"]},
+                {"role": "assistant", "content": tmp_data["response"]},
+            ]
+            chosen_sentence = tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=False,
+                enable_thinking=False,
+            )
             if chosen_sentence is not None:
-                chosen_sentence += end_of_conversation_token
+                # chosen_sentence += end_of_conversation_token
                 chosen_token = tokenizer(chosen_sentence,
                                          max_length=max_seq_len,
                                          padding="max_length",

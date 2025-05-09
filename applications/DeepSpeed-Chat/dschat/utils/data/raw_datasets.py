@@ -48,9 +48,6 @@ class PromptRawDataset(object):
 
 
 
-
-
-
 class LocalJsonFileDataset(PromptRawDataset):
 
     def __init__(self, output_path, seed, local_rank, dataset_name, chat_path):

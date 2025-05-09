@@ -74,9 +74,9 @@ class ExponentialMovingAverage:
 
 def get_tokenizer(model_name_or_path, fast_tokenizer=True):
     tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, fast_tokenizer=fast_tokenizer)
-    tokenizer.pad_token = tokenizer.eos_token
+    # tokenizer.pad_token = tokenizer.eos_token
     # make sure tokenizer is right pad in our logic
-    tokenizer.padding_side = 'right'
+    # tokenizer.padding_side = 'right'
     return tokenizer
 
 

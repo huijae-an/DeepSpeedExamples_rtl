@@ -28,11 +28,10 @@ def validate_model_path(model_path):
 def load_tokenizer_and_model(path, repo):
    
 
-
-    tokenizer = load_hf_tokenizer(path)
+    # Fix fast_tokenizer back to True
+    tokenizer = load_hf_tokenizer(path, fast_tokenizer=True)
     print("tokenizer loaded no problem")
-    # model = AutoModelForCausalLM.from_pretrained(path, config=AutoConfig.from_pretrained(path), torch_dtype=torch.bfloat16)
-    # model = AutoModelForCausalLM.from_pretrained(path, config=AutoConfig.from_pretrained(path))
+
     model = create_hf_model(AutoModelForCausalLM, path, tokenizer)
     print("model loaded no problem")
 
