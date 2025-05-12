@@ -172,14 +172,19 @@ def create_dataset_split(current_dataset, raw_dataset, train_phase, tokenizer,
     chosen_dataset = []
     reject_dataset = []
     if train_phase == 1:
+        total_data_size = 0
+        num_filtered_char = 0
+        num_filtered_tok = 0
         for i, tmp_data in enumerate(current_dataset):
-            # tokenize the text
+            # # Comment this out if applying the template
             # chosen_sentence = raw_dataset.get_prompt_and_chosen(
             #     tmp_data)  # the accept response
+            
+            # Comment this out if not applying the template
             messages = [
-                {"role": "system", "content": "You are a Verilog RTL designer that only writes code using correct Verilog syntax."},
-                {"role": "user", "content": tmp_data["prompt"]},
-                {"role": "assistant", "content": tmp_data["response"]},
+                {"role": "system", "content": "\nYou are a Verilog RTL designer that only writes code using correct Verilog syntax.\n"},
+                # {"role": "user", "content": "Question:\n"+tmp_data["prompt"]+"\nEnclose your code with [BEGIN] and [DONE]. Only output the code snippet and do NOT output anything else.\n\nAnswer:\n"},
+                # {"role": "assistant", "content": "[BEGIN]\n"+tmp_data["response"]+"\n[DONE]"},
             ]
             chosen_sentence = tokenizer.apply_chat_template(
                 messages,
@@ -187,18 +192,42 @@ def create_dataset_split(current_dataset, raw_dataset, train_phase, tokenizer,
                 add_generation_prompt=False,
                 enable_thinking=False,
             )
+
+            total_data_size += 1
+            print(chosen_sentence)
+            if len(chosen_sentence) > 50_000:
+                num_filtered_char += 1
+                continue
             if chosen_sentence is not None:
+                # # Comment this out if applying the template
                 # chosen_sentence += end_of_conversation_token
+
+                # If longer than max_seq_len tokens, skip
+                len_checker = tokenizer(chosen_sentence,
+                                         max_length=max_seq_len+1,
+                                         padding=False,
+                                         truncation=True,
+                                         return_tensors="pt",
+                                         return_length=True)
+                if len_checker["length"] > max_seq_len:
+                    num_filtered_tok += 1
+                    continue
+        
                 chosen_token = tokenizer(chosen_sentence,
                                          max_length=max_seq_len,
                                          padding="max_length",
                                          truncation=True,
                                          return_tensors="pt")
+                
                 chosen_token["input_ids"] = chosen_token["input_ids"].squeeze(
                     0)
                 chosen_token["attention_mask"] = chosen_token[
                     "attention_mask"].squeeze(0)
                 chosen_dataset.append(chosen_token)
+        print("total_data_size",total_data_size)
+        print("num_filtered_char",num_filtered_char)
+        print("num_filtered_tok",num_filtered_tok)
+        print(total_data_size, num_filtered_char, num_filtered_tok)
         print(
             f'Creating dataset {raw_dataset.dataset_name_clean} for {train_phase=} size={len(chosen_dataset)}'
         )
