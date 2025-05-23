@@ -176,31 +176,30 @@ def create_dataset_split(current_dataset, raw_dataset, train_phase, tokenizer,
         num_filtered_char = 0
         num_filtered_tok = 0
         for i, tmp_data in enumerate(current_dataset):
-            # # Comment this out if applying the template
-            # chosen_sentence = raw_dataset.get_prompt_and_chosen(
-            #     tmp_data)  # the accept response
+            # Comment this out if applying the template
+            chosen_sentence = raw_dataset.get_prompt_and_chosen(
+                tmp_data)  # the accept response
             
-            # Comment this out if not applying the template
-            messages = [
-                {"role": "system", "content": "\nYou are a Verilog RTL designer that only writes code using correct Verilog syntax.\n"},
-                # {"role": "user", "content": "Question:\n"+tmp_data["prompt"]+"\nEnclose your code with [BEGIN] and [DONE]. Only output the code snippet and do NOT output anything else.\n\nAnswer:\n"},
-                # {"role": "assistant", "content": "[BEGIN]\n"+tmp_data["response"]+"\n[DONE]"},
-            ]
-            chosen_sentence = tokenizer.apply_chat_template(
-                messages,
-                tokenize=False,
-                add_generation_prompt=False,
-                enable_thinking=False,
-            )
+            # # Comment this out if not applying the template
+            # messages = [
+            #     {"role": "system", "content": "\nYou are a Verilog RTL designer that only writes code using correct Verilog syntax.\n"},
+            #     # {"role": "user", "content": "Question:\n"+tmp_data["prompt"]+"\nEnclose your code with [BEGIN] and [DONE]. Only output the code snippet and do NOT output anything else.\n\nAnswer:\n"},
+            #     # {"role": "assistant", "content": "[BEGIN]\n"+tmp_data["response"]+"\n[DONE]"},
+            # ]
+            # chosen_sentence = tokenizer.apply_chat_template(
+            #     messages,
+            #     tokenize=False,
+            #     add_generation_prompt=False,
+            #     enable_thinking=False,
+            # )
 
             total_data_size += 1
-            print(chosen_sentence)
             if len(chosen_sentence) > 50_000:
                 num_filtered_char += 1
                 continue
             if chosen_sentence is not None:
-                # # Comment this out if applying the template
-                # chosen_sentence += end_of_conversation_token
+                # Comment this out if applying the template
+                chosen_sentence += end_of_conversation_token
 
                 # If longer than max_seq_len tokens, skip
                 len_checker = tokenizer(chosen_sentence,
