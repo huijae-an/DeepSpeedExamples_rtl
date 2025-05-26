@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OUTPUT=./qwen2.5-7b-coder-instruct-verilog_gpt_4o_augmented
+OUTPUT=./qwen2.5-7b-coder-instruct-pymtl_gpt_4o_augmented
 GARBAGE=/scratch/charleshong/garbage/*
 PREVIOUS_MODEL_CACHE=$HOME/.cache/huggingface/hub/*
 ZERO_STAGE=3
