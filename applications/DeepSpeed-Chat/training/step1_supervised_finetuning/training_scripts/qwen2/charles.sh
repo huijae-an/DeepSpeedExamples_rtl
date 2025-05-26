@@ -14,8 +14,8 @@ deepspeed --master_port 50000 main.py \
    --data_split "10,0,0" \
    --data_output_path /scratch/charleshong/garbage \
    --model_name_or_path Qwen/Qwen2.5-Coder-7B-Instruct \
-   --per_device_train_batch_size 16 \
-   --per_device_eval_batch_size 16 \
+   --per_device_train_batch_size 8 \
+   --per_device_eval_batch_size 8 \
    --max_seq_len 1024 \
    --learning_rate 1e-5 \
    --num_train_epochs 1  \
