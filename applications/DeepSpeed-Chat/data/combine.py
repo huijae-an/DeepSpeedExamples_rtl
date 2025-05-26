@@ -23,4 +23,4 @@ def combine_and_shuffle_json(input_pattern, output_file):
 
 # Example usage:
 # Combines all JSON files in the current directory starting with 'data' and ending in .json
-combine_and_shuffle_json('assets/*.json', 'combined_shuffled.json')
+combine_and_shuffle_json('assets/*.json', 'train.json')
