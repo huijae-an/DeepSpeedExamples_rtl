@@ -1,11 +1,11 @@
 #!/bin/bash
 
-OUTPUT=./qwen2.5-7b-coder-instruct-pymtl_gpt_4o_augmented
+OUTPUT=./qwen2.5-7b-coder-instruct-verilog_gpt_4o_augmented
 GARBAGE=/scratch/charleshong/garbage/*
 PREVIOUS_MODEL_CACHE=$HOME/.cache/huggingface/hub/*
 ZERO_STAGE=3
 mkdir -p $OUTPUT
-# rm -rf $GARBAGE
+rm -rf $GARBAGE
 # rm -rf $PREVIOUS_MODEL_CACHE
 
 
@@ -16,10 +16,10 @@ deepspeed --master_port 50000 main.py \
    --model_name_or_path Qwen/Qwen2.5-Coder-7B-Instruct \
    --per_device_train_batch_size 8 \
    --per_device_eval_batch_size 8 \
-   --max_seq_len 1024 \
+   --max_seq_len 512 \
    --learning_rate 1e-5 \
    --num_train_epochs 1  \
-   --gradient_accumulation_steps 16 \
+   --gradient_accumulation_steps 32 \
    --lr_scheduler_type cosine \
    --num_warmup_steps 0 \
    --seed 1234 \
