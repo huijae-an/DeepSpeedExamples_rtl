@@ -426,19 +426,19 @@ def main():
                                   args.output_dir,
                                   zero_stage=args.zero_stage)
         
-        # Huijae: adding _name_or_path to config.json if not already there
+        # Huijae: ensure _name_or_path in config.json is always set to args.model_name_or_path
         import json
         import os
+
         config_path = os.path.join(args.output_dir, "config.json")
         if os.path.exists(config_path):
             with open(config_path, "r") as f:
                 config_data = json.load(f)
 
-            if "_name_or_path" not in config_data:
-                config_data["_name_or_path"] = args.model_name_or_path
-                with open(config_path, "w") as f:
-                    json.dump(config_data, f, indent=2)
-                print(f'Updated config.json with _name_or_path = "{args.model_name_or_path}"')
+            config_data["_name_or_path"] = args.model_name_or_path
+
+            with open(config_path, "w") as f:
+                json.dump(config_data, f, indent=2)
 
 
 
